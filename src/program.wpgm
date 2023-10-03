@@ -1,0 +1,8 @@
+import example.*
+import wollok.game.*
+
+program abc {
+
+	pantalla.iniciar()
+	game.start()
+}
