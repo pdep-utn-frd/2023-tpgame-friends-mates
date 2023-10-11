@@ -17,6 +17,7 @@ object menuPrincipal{
 		keyboard.e().onPressDo{
 			pantalla.configurarInicio()
 			pantalla.iniciar()
+		
 		}
 		
 		keyboard.q().onPressDo{
@@ -103,7 +104,7 @@ class Tanque {
 	}
 	
 	method subir(){
-	  if(position.y()>=0 and position.y()<=14){
+	  if(position.y()>=0 and position.y()<14){
 		position = position.up(1)
 		fotoTanqueA=1
 		fotoTanqueB=1
@@ -127,7 +128,7 @@ class Tanque {
 	}
 	
 	method derecha(){
-		if (position.x()>=0 and position.x()<=14){
+		if (position.x()>=0 and position.x()<14){
 		  position = position.right(1)
 		  fotoTanqueA=4
 		  fotoTanqueB=4
@@ -151,3 +152,5 @@ class TanqueB inherits Tanque {
 object tanque1 inherits Tanque(position = game.at(7, 13),vida=100,oponente=tanque2){}
 	
 object tanque2 inherits TanqueB(position = game.at(7,1),vida=100,oponente=tanque1){}
+
+
