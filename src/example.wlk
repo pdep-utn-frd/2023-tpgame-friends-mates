@@ -45,7 +45,7 @@ object juego {
 	}
 	
 	method agregarVisuales() {
-		
+		game.addVisual(fondojuego)		
 		game.addVisual(tanque1)
 		game.addVisual(tanque2)
 		
@@ -102,7 +102,10 @@ object juego {
 	
 }
 
-
+object fondojuego{
+	method position() = game.at(0,0)
+	method image() = "assets/imagenes/fondojuego.jpg"
+}
 object gameOver {
 	method position() = game.origin()
 	method image() = "assets/imagenes/gameOver.png"
