@@ -4,19 +4,20 @@ import wollok.game.*
 object menuPrincipal{
 	
 	method position() = game.at(0,0)
-	method image() = "assets/imagenes/menuJuego.png"
+	method image() = "assets/imagenes/menuJuego.jpg"
 	
 	method iniciar() {
 	
 		game.width(15)
 		game.height(15)
-		game.title("TANK WAR")
+		game.title("Battle City")
 		game.addVisual(self)
+		game.schedule(1, {audio.reproducir("gameStart")})
 		
 		
 		keyboard.e().onPressDo{
-			pantalla.configurarInicio()
-			pantalla.iniciar()
+			juego.configurarInicio()
+			juego.iniciar()
 		
 		}
 		
@@ -27,7 +28,7 @@ object menuPrincipal{
 }
 
 
-object pantalla {
+object juego {
 	
 	method iniciar() {
 		
@@ -39,10 +40,8 @@ object pantalla {
 	method configurarInicio() {
 		
 		game.clear()
-		game.height(15)
-		game.width(15)
-		game.title("TANK WAR")
-		game.boardGround("fondo.jpg")
+	    audio.parar()
+		
 	}
 	
 	method agregarVisuales() {
@@ -53,6 +52,8 @@ object pantalla {
 //		game.addVisual(vida1)
 //		game.addVisual(vida2)
 	}
+	
+	
 	method programarTeclas() {
 		
 		keyboard.d().onPressDo{tanque1.derecha()}
@@ -68,11 +69,68 @@ object pantalla {
 		keyboard.down().onPressDo{tanque2.bajar()}
 		keyboard.enter().onPressDo{tanque2.disparar()}
 	}
-//	method definirColisiones() {
-//		game.onCollideDo(tanque,{algo => algo.desaparecer() }) 
-//	}
+
+/*
+    method definirColisiones() {
+		game.onCollideDo(tanque,{algo => algo.desaparecer() }) 
+	}
+
+    method detener() {
+    	
+    	audio.parar()
+    	game.schedule(---,{game.addVisual(gameOver)})
+    	game.schedule(---,{audio.reproducir("gameOver")})
+    	
+    	keyboard.space().onPressDo {
+    		self.configurarInicio()
+    		self.iniciar()
+    	}
+    	
+    	keyboard.b().onPressDo {
+    		self.volverAlMenu()
+    	}
+    }
+    
+    method volverAlMenuPrincipal(){
+
+		game.clear()
+		audio.parar()
+		menuPrincipal.iniciar()
+		
+	}
+ */
+	
 }
 
+
+object gameOver {
+	method position() = game.origin()
+	method image() = "assets/imagenes/gameOver.png"
+	
+	}	
+
+	
+
+object audio {
+	
+	var property cancionSonando = null
+	
+	method cancion(nombreCancion) = game.sound( "assets/sonidos/" + nombreCancion + ".mp3")
+	
+	method reproducir(nombreCancion) {
+		cancionSonando = self.cancion(nombreCancion)
+		cancionSonando.play()
+		cancionSonando.volume(0.4)
+		
+		
+		}
+	
+	method parar(){
+		
+		  cancionSonando.stop()
+	}
+
+}
 
 class Tanque {
 	
@@ -144,10 +202,6 @@ class TanqueB inherits Tanque {
 	override method image() = "assets/imagenes/tanqueB_" + fotoTanqueB.toString() + ".png"
 }
 
-//falta ver imagenes de movimiento de cada objeto (tanques), solo use una para la prueba
-//el metodo vidas es solo una prueba para el juego
-//falta metodo disparar, agregar las balas y su colision
-//agregar paredes y su colision
 
 object tanque1 inherits Tanque(position = game.at(7, 13),vida=100,oponente=tanque2){}
 	
