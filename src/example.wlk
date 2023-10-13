@@ -49,8 +49,8 @@ object juego {
 		game.addVisual(tanque1)
 		game.addVisual(tanque2)
 		
-//		game.addVisual(vida1)
-//		game.addVisual(vida2)
+		game.addVisual(vida1)
+		game.addVisual(vida2)
 	}
 	
 	
@@ -153,7 +153,7 @@ class Tanque {
 	}
 	
 	method pierdeVida(){
-		vida = vida - 20
+		vida = vida - 1
 		game.say(self, "tengo " + vida)
 		if (self.vida() == 0){
 			self.desaparecer()
@@ -205,9 +205,16 @@ class TanqueB inherits Tanque {
 	override method image() = "assets/imagenes/tanqueB_" + fotoTanqueB.toString() + ".png"
 }
 
+class Vida{
+	var property tanque
+	var property position
+	method image() = "assets/imagenes/vida"+tanque.vida().toString()+".png"
+}
 
-object tanque1 inherits Tanque(position = game.at(7, 13),vida=100,oponente=tanque2){}
+object tanque1 inherits Tanque(position = game.at(7, 13),vida=5,oponente=tanque2){}
 	
-object tanque2 inherits TanqueB(position = game.at(7,1),vida=100,oponente=tanque1){}
+object tanque2 inherits TanqueB(position = game.at(7,1),vida=5,oponente=tanque1){}
 
 
+object vida1 inherits Vida(tanque=tanque1,position =game.at(2,14)){}
+object vida2 inherits Vida(tanque=tanque2,position =game.at(10,14)){}
