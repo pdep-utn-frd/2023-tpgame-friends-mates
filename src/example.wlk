@@ -30,7 +30,6 @@ object menuPrincipal{
 
 object juego {
 	
-	
 	method iniciar() {
 		
 		self.configurarInicio()
@@ -38,26 +37,18 @@ object juego {
 		self.programarTeclas()
 //		self.definirColisiones()
 	}
-	
 	method configurarInicio() {
 		
 		game.clear()
 	    audio.parar()
-	    
-	    pared1.aparece() pared2.aparece() pared3.aparece() pared4.aparece() pared5.aparece()
-	    pared6.aparece() pared7.aparece() pared8.aparece() pared9.aparece() pared10.aparece()
-	    pared11.aparece() pared12.aparece() pared13.aparece() pared14.aparece() pared15.aparece()
-	    pared16.aparece() pared17.aparece() pared18.aparece() pared19.aparece() pared20.aparece()
-	    
 		
 	}
-	
 	method agregarVisuales() {
-		
 		game.addVisual(fondojuego)		
-		game.addVisual(jugador1)
-		//game.addVisual(tanque2)
-		
+		game.addVisual(tanque1)
+		game.addVisual(tanque2)
+
+
 		game.addVisual(vida1)
 		game.addVisual(vida2)
 		
@@ -66,43 +57,60 @@ object juego {
 		game.addVisual(pared3)
 		game.addVisual(pared4)
 		game.addVisual(pared5)
-		
 		game.addVisual(pared6)
 		game.addVisual(pared7)
 		game.addVisual(pared8)
 		game.addVisual(pared9)
 		game.addVisual(pared10)
-		
 		game.addVisual(pared11)
 		game.addVisual(pared12)
 		game.addVisual(pared13)
 		game.addVisual(pared14)
 		game.addVisual(pared15)
-		
 		game.addVisual(pared16)
 		game.addVisual(pared17)
 		game.addVisual(pared18)
 		game.addVisual(pared19)
 		game.addVisual(pared20)
+	
+		game.whenCollideDo(pared1,{algo => algo.chocar()})
+		game.whenCollideDo(pared2,{algo => algo.chocar()})
+		game.whenCollideDo(pared3,{algo => algo.chocar()})
+		game.whenCollideDo(pared4,{algo => algo.chocar()})
+		game.whenCollideDo(pared5,{algo => algo.chocar()})
+		game.whenCollideDo(pared6,{algo => algo.chocar()})
+		game.whenCollideDo(pared7,{algo => algo.chocar()})
+		game.whenCollideDo(pared8,{algo => algo.chocar()})
+		game.whenCollideDo(pared9,{algo => algo.chocar()})
+		game.whenCollideDo(pared10,{algo => algo.chocar()})
+		game.whenCollideDo(pared11,{algo => algo.chocar()})
+		game.whenCollideDo(pared12,{algo => algo.chocar()})
+		game.whenCollideDo(pared13,{algo => algo.chocar()})
+		game.whenCollideDo(pared14,{algo => algo.chocar()})
+		game.whenCollideDo(pared15,{algo => algo.chocar()})
+		game.whenCollideDo(pared16,{algo => algo.chocar()})
+		game.whenCollideDo(pared17,{algo => algo.chocar()})
+		game.whenCollideDo(pared18,{algo => algo.chocar()})
+		game.whenCollideDo(pared19,{algo => algo.chocar()})
+		game.whenCollideDo(pared20,{algo => algo.chocar()})
 	}
 	
 	
 	method programarTeclas() {
 		
-		keyboard.up().onPressDo{ jugador1.mover(jugador1.position().up(1),arriba)}
-		keyboard.down().onPressDo{ jugador1.mover(jugador1.position().down(1),abajo)}
-		keyboard.left().onPressDo{ jugador1.mover(jugador1.position().left(1),izquierda)}
-		keyboard.right().onPressDo{ jugador1.mover(jugador1.position().right(1),derecha)}
+		keyboard.d().onPressDo{tanque1.derecha()}
+		keyboard.a().onPressDo{tanque1.izquierda()}
+		keyboard.w().onPressDo{tanque1.subir()}
+		keyboard.s().onPressDo{tanque1.bajar()}
+		keyboard.f().onPressDo{tanque1.disparar()}
 		
 		
-	/* keyboard.left().onPressDo{tanque2.izquierda()}
+		keyboard.left().onPressDo{tanque2.izquierda()}
 		keyboard.right().onPressDo{tanque2.derecha()}
 		keyboard.up().onPressDo{tanque2.subir()}
 		keyboard.down().onPressDo{tanque2.bajar()}
-		keyboard.enter().onPressDo{tanque2.disparar()} */
+		keyboard.enter().onPressDo{tanque2.disparar()}
 	}
-	
-	method estaEnElTablero(ubicacion) = ubicacion.x().between( 0 , game.width()) && ubicacion.y().between( 0 , game.height())
 
 /*
     method definirColisiones() {
@@ -138,10 +146,8 @@ object juego {
 
 object fondojuego{
 	method position() = game.at(0,0)
-	method image() = "assets/imagenes/fondojuego.jpg"
+	method image() = "assets/imagenes/fondojuego.jpeg"
 }
-
-
 object gameOver {
 	method position() = game.origin()
 	method image() = "assets/imagenes/gameOver.png"
@@ -170,161 +176,110 @@ object audio {
 	}
 
 }
-
-class ElementosDelJuego {
+class Tanque {
+	var property tanque
+	var property fotoTanque=1
+	var property position
+	var property vida
+	var property oponente
 	
-	method image() = null
+	method image()="assets/imagenes/tanque" + tanque + "_" + fotoTanque.toString() + ".png"
+	method position() = position
 	
-	method desaparece() {
+	method desaparecer(){
 		game.removeVisual(self)
+		oponente.ganar()
 	}
-}
-
-class Tanque inherits ElementosDelJuego{
 	
-	var orientacion = arriba
-	var property position = null
-	var imagen
-	
-	override method image() = orientacion.imagenDelJugador()
-	
-	method mover ( posicion, unaOrientacion){
-		
-		orientacion = unaOrientacion
-		self.actualizarImagen()
-		
-		if( self.puedeMoverAl( unaOrientacion )){
-			return orientacion.posicionEnEsaDireccion()
-		}else{
-			return self.position()
+	method pierdeVida(){
+		vida = vida - 1
+		game.say(self, "tengo " + vida.toString())
+		if (self.vida() == 0){
+			self.desaparecer()
 		}
 	}
 	
-	method actualizarImagen(){
-		imagen = orientacion.imagenDelJugador()
-		game.addVisual(self)
+	method ganar(){
+		game.say(self, "Gané")
 	}
 	
-	method puedeMoverAl( unaOrientacion ) {
-	     return
-	         game.getObjectsIn( unaOrientacion.posicionEnEsaDireccion()).all {unObj => unObj.esAtravesable()}
-}
-}
-
-const jugador1 = new Tanque (position = game.at(7, 13),imagen = "assets/imagenes/tanqueA_2.png")
-
-
-object arriba {
-	method imagenDelJugador() = "assets/imagenes/tanqueA_1.png"
-	method posicionEnEsaDireccion() = jugador1.position().up(1)
-}
-
-object abajo {
-	method imagenDelJugador() = "assets/imagenes/tanqueA_2.png"
-	method posicionEnEsaDireccion() = jugador1.position().down(1)
-}
-
-object izquierda {
-	method imagenDelJugador() = "assets/imagenes/tanqueA_3.png"
-	method posicionEnEsaDireccion() = jugador1.position().left(1)
-}
-
-object derecha {
-	method imagenDelJugador() = "assets/imagenes/tanqueA_4.png"
-	method posicionEnEsaDireccion() = jugador1.position().right(1)
-}
-
-/* 
- * class TanqueB inherits Tanque {
-	
-	override method image() = "assets/imagenes/tanqueB_" + fotoTanqueB.toString() + ".png"
-}
-*/
-
-class Bala inherits ElementosDelJuego{
-	
-	var property position
-	var orientacion 
-	
-	override method image() = ""
-	
-	method avanza(hacia) {
-		if(juego.estaEnElTablero(hacia)) {
-			position = hacia
-		} else {
-			self.desaparece()
+	method subir(){
+		fotoTanque=1
+		if(position.y()>=0 and position.y()<14){
+		position = position.up(1)
+		}
+	}
+		
+	method bajar(){
+		fotoTanque=2
+		if (position.y()<=15 and position.y()>0){
+		  position = position.down(1)
 		}
 	}
 	
-	method impactoBala(param1) {
+	method izquierda(){
+		fotoTanque=3
+		if (position.x()<=15 and position.x()>0){
+		  position = position.left(1)
+		}
+	}
+	
+	method derecha(){
+		fotoTanque=4
+		if (position.x()>=0 and position.x()<14){
+		  position = position.right(1)
+		}
+	}
+	
+	method chocar(){
 		
+		if(fotoTanque==1){position = position.down(1)
+		}if(fotoTanque==2){position = position.up(1)
+		}if(fotoTanque==3){position = position.right(1)
+		}if(fotoTanque==4){position = position.left(1)}
 	}
-	
-	method danio() = 25
-	
-	method disparar(){
-		position = orientacion.posicionEnEsaDireccion()
-		game.addVisual(self)
-		game.onCollideDo( self , { elem => elem.impactoBala()})
-		game.onTick( 20 , "disparo tanque" , { self.avanza(orientacion.posicionEnEsaDireccion()) } )
-	}
-	
+	method disparar(){bala.disparo()}
 }
 
-class Vida {
-	
-	var property fotoVida = 5
+object bala{
+	method disparo(){}
+}
+class Pared{
 	var property position
-	
-	method image() = "assets/vida5.png"
-	
-	
+	method image()="assets/imagenes/pared.jpg"	
 }
-/* object tanque1 inherits Tanque(position = game.at(7, 13),vida=5,oponente=tanque2){}
-	
-object tanque2 inherits TanqueB(position = game.at(7,1),vida=5,oponente=tanque1){}
-*/
-
-
-object vida1 inherits Vida(position =game.at(2,14)){}
-object vida2 inherits Vida(position =game.at(10,14)){}
-
-class Muro {
-	
-	var property position = null
-	var  x
-	var  y 
-	
-	method aparece() {
-			
-		   position = game.at(x,y)
-		   
-	}
-	method image()="assets/imagenes/pared.png"
-	method esAtravesable()=false
+class Vida{
+	var property tanque
+	var property position
+	method image() = "assets/imagenes/vida"+tanque.vida().toString()+".png"
 }
 
-const pared1 = new Muro ( x=5 , y=3)
-const pared2 = new Muro ( x=5 , y=4)
-const pared3 = new Muro ( x=5 , y=5)
-const pared4 = new Muro ( x=4 , y=5)
-const pared5 = new Muro ( x=3 , y=5)
+object tanque1 inherits Tanque(tanque="A",fotoTanque=2,position = game.at(7, 13),vida=5,oponente=tanque2){}
+object tanque2 inherits Tanque(tanque="B",fotoTanque=1,position = game.at(7,1),vida=5,oponente=tanque1){}
 
-const pared6 = new Muro ( x=9 , y=3)
-const pared7 = new Muro ( x=9 , y=4)
-const pared8 = new Muro ( x=9 , y=5)
-const pared9 = new Muro ( x=10 , y=5)
-const pared10 = new Muro ( x=11 , y=5)
+object vida1 inherits Vida(tanque=tanque1,position =game.at(2,14)){}
+object vida2 inherits Vida(tanque=tanque2,position =game.at(10,14)){}
 
-const pared11 = new Muro ( x=3 , y=9)
-const pared12 = new Muro ( x=4 , y=9)
-const pared13 = new Muro ( x=5 , y=9)
-const pared14 = new Muro ( x=5 , y=10)
-const pared15 = new Muro ( x=5 , y=11)
+object pared1 inherits Pared(position=game.at(3,9)){}
+object pared2 inherits Pared(position=game.at(4,9)){}
+object pared3 inherits Pared(position=game.at(5,9)){}
+object pared4 inherits Pared(position=game.at(5,10)){}
+object pared5 inherits Pared(position=game.at(5,11)){}
 
-const pared16 = new Muro ( x=9 , y=9)
-const pared17 = new Muro ( x=9 , y=10)
-const pared18 = new Muro ( x=9 , y=11)
-const pared19 = new Muro ( x=10 , y=9)
-const pared20 = new Muro ( x=11 , y=9)
+object pared6 inherits Pared(position=game.at(9,11)){}
+object pared7 inherits Pared(position=game.at(9,10)){}
+object pared8 inherits Pared(position=game.at(9,9)){}
+object pared9 inherits Pared(position=game.at(10,9)){}
+object pared10 inherits Pared(position=game.at(11,9)){}
 
+object pared11 inherits Pared(position=game.at(3,5)){}
+object pared12 inherits Pared(position=game.at(4,5)){}
+object pared13 inherits Pared(position=game.at(5,5)){}
+object pared14 inherits Pared(position=game.at(5,4)){}
+object pared15 inherits Pared(position=game.at(5,3)){}
+
+object pared16 inherits Pared(position=game.at(9,5)){}
+object pared17 inherits Pared(position=game.at(9,4)){}
+object pared18 inherits Pared(position=game.at(9,3)){}
+object pared19 inherits Pared(position=game.at(10,5)){}
+object pared20 inherits Pared(position=game.at(11,5)){}
