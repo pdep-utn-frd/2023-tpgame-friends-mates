@@ -93,6 +93,8 @@ object juego {
 		game.whenCollideDo(pared18,{algo => algo.chocar()})
 		game.whenCollideDo(pared19,{algo => algo.chocar()})
 		game.whenCollideDo(pared20,{algo => algo.chocar()})
+		game.whenCollideDo(tanque2,{algo => algo.chocar()})
+		game.whenCollideDo(tanque1,{algo => algo.chocar()})
 	}
 	
 	
@@ -111,6 +113,8 @@ object juego {
 		keyboard.down().onPressDo{tanque2.bajar()}
 		keyboard.enter().onPressDo{tanque2.disparar()}
 	}
+	
+	
 
 /*
     method definirColisiones() {
@@ -144,12 +148,17 @@ object juego {
 	
 }
 
-object fondojuego{
+object fondojuego {
+	
 	method position() = game.at(0,0)
+	
 	method image() = "assets/imagenes/fondojuego.jpeg"
 }
+
 object gameOver {
+	
 	method position() = game.origin()
+	
 	method image() = "assets/imagenes/gameOver.png"
 	
 	}	
@@ -176,14 +185,18 @@ object audio {
 	}
 
 }
+
+
 class Tanque {
+	
 	var property tanque
 	var property fotoTanque=1
 	var property position
-	var property vida
+	var property vida = 5
 	var property oponente
 	
 	method image()="assets/imagenes/tanque" + tanque + "_" + fotoTanque.toString() + ".png"
+	
 	method position() = position
 	
 	method desaparecer(){
@@ -205,7 +218,7 @@ class Tanque {
 	
 	method subir(){
 		fotoTanque=1
-		if(position.y()>=0 and position.y()<14){
+		if(position.y()>=0 and position.y()<13){
 		position = position.up(1)
 		}
 	}
@@ -238,27 +251,76 @@ class Tanque {
 		}if(fotoTanque==3){position = position.right(1)
 		}if(fotoTanque==4){position = position.left(1)}
 	}
-	method disparar(){bala.disparo()}
+	
+	method disparar(){bala.disparar(fotoTanque)}
 }
 
-object bala{
-	method disparo(){}
+object bala {
+
+     var property direccion
+     var property position1
+     var property position2
+     
+     method image() = "assets/imagenes/bala.png"
+     
+     method danio() = 1
+
+     method disparar ( unaOrientacion ) {
+    	
+    	direccion = unaOrientacion
+    	
+        if ( direccion == 1 ) {
+        	game.addVisual(self)
+        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().up(1))})
+        	game.onTick( 20, "Disparo", { self.mover(tanque2.position().up(1))})
+        }
+        
+        if ( direccion == 2 ) {
+        	game.addVisual(self)
+        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().down(1))})
+        	game.onTick( 20, "Disparo", { self.mover(tanque2.position().down(1))})
+        }
+        
+        if ( direccion == 3 ) {
+        	game.addVisual(self)
+        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().left(1))})
+        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().left(1))})
+        }
+        
+        if ( direccion == 4 ) {
+        	game.addVisual(self)
+        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().right(1))})
+        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().right(1))})
+        }
+        	}
+      
+     method mover( unaDireccion ) {
+     	
+     }
+    
+     method desaparece(){ game.removeVisual(self) }
 }
-class Pared{
+
+class Pared {
+	
 	var property position
+	
 	method image()="assets/imagenes/pared.jpg"	
 }
-class Vida{
+
+class Vida {
+	
 	var property tanque
 	var property position
-	method image() = "assets/imagenes/vida"+tanque.vida().toString()+".png"
+	
+	method image() = "assets/imagenes/vida" + tanque.vida().toString() + ".png"
 }
 
 object tanque1 inherits Tanque(tanque="A",fotoTanque=2,position = game.at(7, 13),vida=5,oponente=tanque2){}
 object tanque2 inherits Tanque(tanque="B",fotoTanque=1,position = game.at(7,1),vida=5,oponente=tanque1){}
 
-object vida1 inherits Vida(tanque=tanque1,position =game.at(2,14)){}
-object vida2 inherits Vida(tanque=tanque2,position =game.at(10,14)){}
+object vida1 inherits Vida(tanque=tanque1,position =game.at(0,14)){}
+object vida2 inherits Vida(tanque=tanque2,position =game.at(12,14)){}
 
 object pared1 inherits Pared(position=game.at(3,9)){}
 object pared2 inherits Pared(position=game.at(4,9)){}
