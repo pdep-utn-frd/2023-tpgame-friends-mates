@@ -1,7 +1,7 @@
 import wollok.game.*
 
 
-object menuPrincipal{
+object menuPrincipal {
 	
 	method position() = game.at(0,0)
 	method image() = "assets/imagenes/menuJuego.jpg"
@@ -16,7 +16,6 @@ object menuPrincipal{
 		
 		
 		keyboard.e().onPressDo{
-			juego.configurarInicio()
 			juego.iniciar()
 		
 		}
@@ -35,7 +34,6 @@ object juego {
 		self.configurarInicio()
 		self.agregarVisuales()
 		self.programarTeclas()
-//		self.definirColisiones()
 	}
 	method configurarInicio() {
 		
@@ -44,10 +42,10 @@ object juego {
 		
 	}
 	method agregarVisuales() {
+		
 		game.addVisual(fondojuego)		
 		game.addVisual(tanque1)
 		game.addVisual(tanque2)
-
 
 		game.addVisual(vida1)
 		game.addVisual(vida2)
@@ -93,8 +91,11 @@ object juego {
 		game.whenCollideDo(pared18,{algo => algo.chocar()})
 		game.whenCollideDo(pared19,{algo => algo.chocar()})
 		game.whenCollideDo(pared20,{algo => algo.chocar()})
+		
 		game.whenCollideDo(tanque2,{algo => algo.chocar()})
 		game.whenCollideDo(tanque1,{algo => algo.chocar()})
+		
+		
 	}
 	
 	
@@ -114,38 +115,22 @@ object juego {
 		keyboard.enter().onPressDo{tanque2.disparar()}
 	}
 	
-	
-
-/*
-    method definirColisiones() {
-		game.onCollideDo(tanque,{algo => algo.desaparecer() }) 
-	}
-
-    method detener() {
+	method detener() {
     	
     	audio.parar()
-    	game.schedule(---,{game.addVisual(gameOver)})
-    	game.schedule(---,{audio.reproducir("gameOver")})
+    	game.schedule(1,{game.addVisual(gameOver)})
+    	game.schedule(1,{audio.reproducir("gameOver")})
     	
     	keyboard.space().onPressDo {
-    		self.configurarInicio()
     		self.iniciar()
     	}
     	
     	keyboard.b().onPressDo {
-    		self.volverAlMenu()
+    		game.clear()
+		    audio.parar()
+		    menuPrincipal.iniciar()
     	}
     }
-    
-    method volverAlMenuPrincipal(){
-
-		game.clear()
-		audio.parar()
-		menuPrincipal.iniciar()
-		
-	}
- */
-	
 }
 
 object fondojuego {
@@ -159,7 +144,7 @@ object gameOver {
 	
 	method position() = game.origin()
 	
-	method image() = "assets/imagenes/gameOver.png"
+	method image() = "assets/imagenes/gameOver.jpg"
 	
 	}	
 
@@ -175,12 +160,9 @@ object audio {
 		cancionSonando = self.cancion(nombreCancion)
 		cancionSonando.play()
 		cancionSonando.volume(0.4)
-		
-		
 		}
 	
 	method parar(){
-		
 		  cancionSonando.stop()
 	}
 
@@ -202,19 +184,16 @@ class Tanque {
 	
 	method desaparecer(){
 		game.removeVisual(self)
-		oponente.ganar()
+		vida = 5
+		juego.detener()
+        
 	}
 	
 	method pierdeVida(){
 		vida = vida - 1
-		game.say(self, "tengo " + vida.toString())
 		if (self.vida() == 0){
 			self.desaparecer()
 		}
-	}
-	
-	method ganar(){
-		game.say(self, "Gané")
 	}
 	
 	method subir(){
@@ -252,40 +231,63 @@ class Tanque {
 		}if(fotoTanque==3){position = position.right(1)
 		}if(fotoTanque==4){position = position.left(1)}
 	}
+	
 	method disparar(){
-		bala.position(position)
+		
 		game.addVisual(bala)
+		
 		if (fotoTanque==1){
-			game.onTick(0,"disparo", { => bala.subir()})
-			game.schedule(200,{bala.parar()})
+			bala.position(position.up(1))
+			bala.fotoBala(1)
+			game.onTick(20,"disparo", { => bala.subir()})
+			//game.schedule(400,{bala.parar()})
 		}if (fotoTanque==2){
-			game.onTick(0,"disparo", { => bala.bajar()})
-			game.schedule(200,{bala.parar()})
+			bala.position(position.down(1))
+			bala.fotoBala(2)
+			game.onTick(20,"disparo", { => bala.bajar()})
+			//game.schedule(400,{bala.parar()})
 		}if (fotoTanque==3){
-			game.onTick(0,"disparo", { => bala.izquierda()})
-			game.schedule(200,{bala.parar()})
+			bala.position(position.left(1))
+			bala.fotoBala(3)
+			game.onTick(20,"disparo", { => bala.izquierda()})
+			//game.schedule(400,{bala.parar()})
 		}if (fotoTanque==4){
-			game.onTick(0,"disparo", { => bala.derecha()})
-			game.schedule(200,{bala.parar()})
+			bala.position(position.right(1))
+			bala.fotoBala(4)
+			game.onTick(20,"disparo", { => bala.derecha()})
+			//game.schedule(400,{bala.parar()})
 		}
+		
+		game.onCollideDo(bala,{enemigo => enemigo.pierdeVida()})
+        game.whenCollideDo(tanque1,{ cosa => cosa.parar()})
+        game.whenCollideDo(tanque2,{ cosa => cosa.parar()})
 	}
 }
-class Bala{
+
+class Bala {
+	
 	var property tanque
 	var property position
-	method image()= "assets/imagenes/bala.png"
+	var property fotoBala
+	
+	method image()= "assets/imagenes/bala" + fotoBala.toString() + ".png"
+	
 	method subir(){
 		position = position.up(1)
 	}
+	
 	method bajar(){
 		position = position.down(1)
 	}
+	
 	method derecha(){
 		position = position.right(1)
 	}
+	
 	method izquierda(){
 		position = position.left(1)
 	}
+	
 	method parar(){
 		game.removeTickEvent("disparo")
 		game.removeVisual(self)
@@ -310,11 +312,11 @@ class Vida {
 object tanque1 inherits Tanque(tanque="A",fotoTanque=2,position = game.at(7, 13),vida=5,oponente=tanque2,bala=bala1){}
 object tanque2 inherits Tanque(tanque="B",fotoTanque=1,position = game.at(7,1),vida=5,oponente=tanque1,bala=bala2){}
 
-object bala1 inherits Bala(tanque=tanque1,position=tanque1.position()){}
-object bala2 inherits Bala(tanque=tanque2,position=tanque2.position()){}
+object bala1 inherits Bala(tanque=tanque1,position=tanque1.position(),fotoBala=null){}
+object bala2 inherits Bala(tanque=tanque2,position=tanque2.position(),fotoBala=null){}
 
-object vida1 inherits Vida(tanque=tanque1,position =game.at(0,14)){}
-object vida2 inherits Vida(tanque=tanque2,position =game.at(12,14)){}
+object vida1 inherits Vida(tanque=tanque1,position =game.at(1,14)){}
+object vida2 inherits Vida(tanque=tanque2,position =game.at(11,14)){}
 
 object pared1 inherits Pared(position=game.at(3,9)){}
 object pared2 inherits Pared(position=game.at(4,9)){}
