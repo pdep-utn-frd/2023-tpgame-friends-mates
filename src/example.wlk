@@ -39,6 +39,8 @@ object juego {
 		
 		game.clear()
 	    audio.parar()
+	    tanque1.resetear()
+    	tanque2.resetear()
 		
 	}
 	method agregarVisuales() {
@@ -122,6 +124,8 @@ object juego {
     	game.schedule(1,{audio.reproducir("gameOver")})
     	
     	keyboard.space().onPressDo {
+    		tanque1.resetear()
+    		tanque2.resetear()
     		self.iniciar()
     	}
     	
@@ -138,6 +142,8 @@ object fondojuego {
 	method position() = game.at(0,0)
 	
 	method image() = "assets/imagenes/fondojuego.jpeg"
+	
+	method chocar() {}
 }
 
 object gameOver {
@@ -183,8 +189,8 @@ class Tanque {
 	method position() = position
 	
 	method desaparecer(){
-		game.removeVisual(self)
-		vida = 5
+		game.removeVisual(tanque1)
+		game.removeVisual(tanque2)
 		juego.detener()
         
 	}
@@ -258,7 +264,8 @@ class Tanque {
 			game.schedule(400,{bala.parar()})
 		}
 		game.onCollideDo(bala,{enemigo => enemigo.pierdeVida()})
-        	game.whenCollideDo(bala,{ cosa => bala.parar()})
+		game.onCollideDo(bala,{ cosa => bala.parar()})
+        
 	}
 }
 
@@ -290,6 +297,8 @@ class Bala {
 		game.removeTickEvent("disparo")
 		game.removeVisual(self)
 	}
+	
+	method chocar(){}
 }
 
 class Pared {
@@ -307,8 +316,27 @@ class Vida {
 	method image() = "assets/imagenes/vida" + tanque.vida().toString() + ".png"
 }
 
-object tanque1 inherits Tanque(tanque="A",fotoTanque=2,position = game.at(7, 13),vida=5,oponente=tanque2,bala=bala1){}
-object tanque2 inherits Tanque(tanque="B",fotoTanque=1,position = game.at(7,1),vida=5,oponente=tanque1,bala=bala2){}
+object tanque1 inherits Tanque(tanque="A",fotoTanque=2,position = game.at(7, 13),vida=5,oponente=tanque2,bala=bala1){
+	
+	method resetear() {
+		vida = 5
+		tanque="A"
+		fotoTanque=2
+		position = game.at(7, 13)
+		bala=bala1
+	}
+}
+
+object tanque2 inherits Tanque(tanque="B",fotoTanque=1,position = game.at(7,1),vida=5,oponente=tanque1,bala=bala2){
+	
+	method resetear() {
+		vida = 5
+		tanque="B"
+		fotoTanque=1
+		position = game.at(7, 1)
+		bala=bala2
+	}
+}
 
 object bala1 inherits Bala(tanque=tanque1,position=tanque1.position(),fotoBala=null){}
 object bala2 inherits Bala(tanque=tanque2,position=tanque2.position(),fotoBala=null){}
