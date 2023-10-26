@@ -194,6 +194,7 @@ class Tanque {
 	var property position
 	var property vida = 5
 	var property oponente
+	var property bala
 	
 	method image()="assets/imagenes/tanque" + tanque + "_" + fotoTanque.toString() + ".png"
 	
@@ -251,54 +252,44 @@ class Tanque {
 		}if(fotoTanque==3){position = position.right(1)
 		}if(fotoTanque==4){position = position.left(1)}
 	}
-	
-	method disparar(){bala.disparar(fotoTanque)}
+	method disparar(){
+		bala.position(position)
+		game.addVisual(bala)
+		if (fotoTanque==1){
+			game.onTick(0,"disparo", { => bala.subir()})
+			game.schedule(200,{bala.parar()})
+		}if (fotoTanque==2){
+			game.onTick(0,"disparo", { => bala.bajar()})
+			game.schedule(200,{bala.parar()})
+		}if (fotoTanque==3){
+			game.onTick(0,"disparo", { => bala.izquierda()})
+			game.schedule(200,{bala.parar()})
+		}if (fotoTanque==4){
+			game.onTick(0,"disparo", { => bala.derecha()})
+			game.schedule(200,{bala.parar()})
+		}
+	}
 }
-
-object bala {
-
-     var property direccion
-     var property position1
-     var property position2
-     
-     method image() = "assets/imagenes/bala.png"
-     
-     method danio() = 1
-
-     method disparar ( unaOrientacion ) {
-    	
-    	direccion = unaOrientacion
-    	
-        if ( direccion == 1 ) {
-        	game.addVisual(self)
-        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().up(1))})
-        	game.onTick( 20, "Disparo", { self.mover(tanque2.position().up(1))})
-        }
-        
-        if ( direccion == 2 ) {
-        	game.addVisual(self)
-        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().down(1))})
-        	game.onTick( 20, "Disparo", { self.mover(tanque2.position().down(1))})
-        }
-        
-        if ( direccion == 3 ) {
-        	game.addVisual(self)
-        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().left(1))})
-        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().left(1))})
-        }
-        
-        if ( direccion == 4 ) {
-        	game.addVisual(self)
-        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().right(1))})
-        	game.onTick( 20, "Disparo", { self.mover(tanque1.position().right(1))})
-        }
-        	}
-      
-     method mover( unaDireccion ) {
-     	
-     }
-    
-     method desaparece(){ game.removeVisual(self) }
+class Bala{
+	var property tanque
+	var property position
+	method image()= "assets/imagenes/bala.png"
+	method subir(){
+		position = position.up(1)
+	}
+	method bajar(){
+		position = position.down(1)
+	}
+	method derecha(){
+		position = position.right(1)
+	}
+	method izquierda(){
+		position = position.left(1)
+	}
+	method parar(){
+		game.removeTickEvent("disparo")
+		game.removeVisual(self)
+	}
 }
 
 class Pared {
@@ -316,8 +307,11 @@ class Vida {
 	method image() = "assets/imagenes/vida" + tanque.vida().toString() + ".png"
 }
 
-object tanque1 inherits Tanque(tanque="A",fotoTanque=2,position = game.at(7, 13),vida=5,oponente=tanque2){}
-object tanque2 inherits Tanque(tanque="B",fotoTanque=1,position = game.at(7,1),vida=5,oponente=tanque1){}
+object tanque1 inherits Tanque(tanque="A",fotoTanque=2,position = game.at(7, 13),vida=5,oponente=tanque2,bala=bala1){}
+object tanque2 inherits Tanque(tanque="B",fotoTanque=1,position = game.at(7,1),vida=5,oponente=tanque1,bala=bala2){}
+
+object bala1 inherits Bala(tanque=tanque1,position=tanque1.position()){}
+object bala2 inherits Bala(tanque=tanque2,position=tanque2.position()){}
 
 object vida1 inherits Vida(tanque=tanque1,position =game.at(0,14)){}
 object vida2 inherits Vida(tanque=tanque2,position =game.at(12,14)){}
