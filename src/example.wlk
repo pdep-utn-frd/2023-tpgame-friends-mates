@@ -240,27 +240,25 @@ class Tanque {
 			bala.position(position.up(1))
 			bala.fotoBala(1)
 			game.onTick(20,"disparo", { => bala.subir()})
-			//game.schedule(400,{bala.parar()})
+			game.schedule(400,{bala.parar()})
 		}if (fotoTanque==2){
 			bala.position(position.down(1))
 			bala.fotoBala(2)
 			game.onTick(20,"disparo", { => bala.bajar()})
-			//game.schedule(400,{bala.parar()})
+			game.schedule(400,{bala.parar()})
 		}if (fotoTanque==3){
 			bala.position(position.left(1))
 			bala.fotoBala(3)
 			game.onTick(20,"disparo", { => bala.izquierda()})
-			//game.schedule(400,{bala.parar()})
+			game.schedule(400,{bala.parar()})
 		}if (fotoTanque==4){
 			bala.position(position.right(1))
 			bala.fotoBala(4)
 			game.onTick(20,"disparo", { => bala.derecha()})
-			//game.schedule(400,{bala.parar()})
+			game.schedule(400,{bala.parar()})
 		}
-		
 		game.onCollideDo(bala,{enemigo => enemigo.pierdeVida()})
-        game.whenCollideDo(tanque1,{ cosa => cosa.parar()})
-        game.whenCollideDo(tanque2,{ cosa => cosa.parar()})
+        	game.whenCollideDo(bala,{ cosa => bala.parar()})
 	}
 }
 
