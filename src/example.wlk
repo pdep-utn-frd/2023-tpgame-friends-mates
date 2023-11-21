@@ -419,6 +419,7 @@ object pared18 inherits Pared(position=game.at(9,3)){}
 object pared19 inherits Pared(position=game.at(10,5)){}
 object pared20 inherits Pared(position=game.at(11,5)){}
 
+const paredes = [pared1,pared2, pared3, pared4, pared5, pared6, pared7, pared8, pared9, pared10, pared11, pared12, pared13, pared14, pared15, pared16, pared17, pared18, pared19, pared20]
 // POWER UPS
 
 class PowerUps {
@@ -429,12 +430,17 @@ class PowerUps {
 
 	
   	method aparece() {
-        x = (1..14).anyOne() 
+        x = (1..14).anyOne()
 		y = (1..13).anyOne()
-		position = game.at(x,y)
+		if(!paredes.any({par=>par.position()==game.at(x,y)})){
+			position = game.at(x,y)
+		}else{
+			self.aparece()
+		}
+		
 		game.addVisual(self)
-		game.schedule(30000,{self.aparece()})
-		game.schedule(5500,{self.desaparece()})
+		game.schedule(10000,{self.aparece()})
+		game.schedule(5000,{self.desaparece()})
 	}
 	
 	method desaparece() {
