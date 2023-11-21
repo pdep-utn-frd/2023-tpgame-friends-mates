@@ -432,12 +432,11 @@ class PowerUps {
   	method aparece() {
         x = (1..14).anyOne()
 		y = (1..13).anyOne()
-		if(!paredes.any({par=>par.position()==game.at(x,y)})){
+		if(!paredes.any({pared=>pared.position()==game.at(x,y)})){
 			position = game.at(x,y)
 		}else{
 			self.aparece()
 		}
-		
 		game.addVisual(self)
 		game.schedule(10000,{self.aparece()})
 		game.schedule(5000,{self.desaparece()})
