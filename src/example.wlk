@@ -72,6 +72,9 @@ object juego {
 		game.addVisual(pared18)
 		game.addVisual(pared19)
 		game.addVisual(pared20)
+		
+		powerUpVida.aparece()
+		powerUpMuerte.aparece()
 	
 		game.whenCollideDo(pared1,{algo => algo.chocar()})
 		game.whenCollideDo(pared2,{algo => algo.chocar()})
@@ -96,6 +99,12 @@ object juego {
 		
 		game.whenCollideDo(tanque2,{algo => algo.chocar()})
 		game.whenCollideDo(tanque1,{algo => algo.chocar()})
+		
+		game.whenCollideDo(powerUpVida,  { tanque1 => tanque1.colisionarConPowerUp(powerUpVida) })
+        game.whenCollideDo(powerUpMuerte,  { tanque1 => tanque1.colisionarConPowerUp(powerUpMuerte) })
+
+        game.whenCollideDo(powerUpVida,  { tanque2 => tanque2.colisionarConPowerUp(powerUpVida) })
+        game.whenCollideDo(powerUpMuerte,  { tanque2 => tanque2.colisionarConPowerUp(powerUpMuerte) })
 		
 		
 	}
@@ -182,18 +191,29 @@ class Tanque {
 	var property position
 	var property vida = 5
 	var property oponente
-	var property bala
-	
+
+
 	method image()="assets/imagenes/tanque" + tanque + "_" + fotoTanque.toString() + ".png"
 	
 	method position() = position
 	
 	method desaparecer(){
+		if (game.hasVisual(self)) {
 		game.removeVisual(tanque1)
 		game.removeVisual(tanque2)
 		juego.detener()
-        
+       }
 	}
+	
+	method vidaMaxima(){
+		vida = 5
+	}
+	
+	method explotarGranada() {
+		oponente.pierdeVida()
+		oponente.pierdeVida()
+	}
+	
 	
 	method pierdeVida(){
 		vida = vida - 1
@@ -238,67 +258,96 @@ class Tanque {
 		}if(fotoTanque==4){position = position.left(1)}
 	}
 	
+	method choqueBala(bala) {
+		bala.choque()
+		self.pierdeVida()
+	}
+	
 	method disparar(){
 		
+		const bala = new Bala( position = self.position())
 		game.addVisual(bala)
-		
-		if (fotoTanque==1){
-			bala.position(position.up(1))
-			bala.fotoBala(1)
-			game.onTick(20,"disparo", { => bala.subir()})
-			game.schedule(400,{bala.parar()})
-		}if (fotoTanque==2){
-			bala.position(position.down(1))
-			bala.fotoBala(2)
-			game.onTick(20,"disparo", { => bala.bajar()})
-			game.schedule(400,{bala.parar()})
-		}if (fotoTanque==3){
-			bala.position(position.left(1))
-			bala.fotoBala(3)
-			game.onTick(20,"disparo", { => bala.izquierda()})
-			game.schedule(400,{bala.parar()})
-		}if (fotoTanque==4){
-			bala.position(position.right(1))
-			bala.fotoBala(4)
-			game.onTick(20,"disparo", { => bala.derecha()})
-			game.schedule(400,{bala.parar()})
-		}
-		game.onCollideDo(bala,{enemigo => enemigo.pierdeVida()})
-		game.onCollideDo(bala,{ cosa => bala.parar()})
+		bala.mover(fotoTanque)
+		game.whenCollideDo(bala,{ cosa => cosa.choqueBala(bala)})
         
 	}
-}
+	
+	  method colisionarConPowerUp(powerUp) {
+        powerUp.efecto(self)
+    }
+	
+    }
 
 class Bala {
 	
-	var property tanque
 	var property position
-	var property fotoBala
 	
-	method image()= "assets/imagenes/bala" + fotoBala.toString() + ".png"
+	method image()= "assets/imagenes/bala.png"
+	
+	method mover(direccion) {
+		if (direccion == 1){
+			position = position.up(1)
+			game.onTick(20,"disparo", { => self.subir()})
+		}
+		else if (direccion == 2){
+			position = position.down(1)
+			game.onTick(20,"disparo", { => self.bajar()})
+		}
+		else if (direccion == 3){
+			position = position.left(1)
+			game.onTick(20,"disparo", { => self.izquierda()})
+		}
+		else if (direccion == 4){
+			position = position.right(1)
+			game.onTick(20,"disparo", { => self.derecha()})
+	    }	
+	}
 	
 	method subir(){
 		position = position.up(1)
+		if(position.y() > game.height()){
+			self.borrar()
+		}
 	}
 	
 	method bajar(){
 		position = position.down(1)
+		if(position.y() > game.height()){
+			self.borrar()
+		}
 	}
 	
 	method derecha(){
 		position = position.right(1)
+		if(position.x() > game.width()){
+			self.borrar()
+		}
 	}
 	
 	method izquierda(){
 		position = position.left(1)
+		if(position.x() > game.width()){
+			self.borrar()
+		}
 	}
 	
-	method parar(){
+	method borrar(){
 		game.removeTickEvent("disparo")
 		game.removeVisual(self)
 	}
 	
-	method chocar(){}
+	method choque(){
+		if(game.hasVisual(self)) {
+		    self.borrar()
+		}
+	}
+	
+	method choqueBala(bala){
+		bala.choque()
+		if(game.hasVisual(self)){
+			bala.borrar()
+		}
+	}
 }
 
 class Pared {
@@ -306,6 +355,10 @@ class Pared {
 	var property position
 	
 	method image()="assets/imagenes/pared.jpg"	
+	
+	method choqueBala(bala) {
+		bala.choque()
+	}
 }
 
 class Vida {
@@ -316,30 +369,28 @@ class Vida {
 	method image() = "assets/imagenes/vida" + tanque.vida().toString() + ".png"
 }
 
-object tanque1 inherits Tanque(tanque="A",fotoTanque=2,position = game.at(7, 13),vida=5,oponente=tanque2,bala=bala1){
+object tanque1 inherits Tanque(tanque="A",fotoTanque=2,position = game.at(7, 13),vida=5,oponente=tanque2){
 	
 	method resetear() {
 		vida = 5
 		tanque="A"
 		fotoTanque=2
 		position = game.at(7, 13)
-		bala=bala1
 	}
 }
 
-object tanque2 inherits Tanque(tanque="B",fotoTanque=1,position = game.at(7,1),vida=5,oponente=tanque1,bala=bala2){
+object tanque2 inherits Tanque(tanque="B",fotoTanque=1,position = game.at(7,1),vida=5,oponente=tanque1){
 	
 	method resetear() {
 		vida = 5
 		tanque="B"
 		fotoTanque=1
 		position = game.at(7, 1)
-		bala=bala2
 	}
 }
 
-object bala1 inherits Bala(tanque=tanque1,position=tanque1.position(),fotoBala=null){}
-object bala2 inherits Bala(tanque=tanque2,position=tanque2.position(),fotoBala=null){}
+object bala1 inherits Bala(position=tanque1.position()){}
+object bala2 inherits Bala(position=tanque2.position()){}
 
 object vida1 inherits Vida(tanque=tanque1,position =game.at(1,14)){}
 object vida2 inherits Vida(tanque=tanque2,position =game.at(11,14)){}
@@ -367,3 +418,61 @@ object pared17 inherits Pared(position=game.at(9,4)){}
 object pared18 inherits Pared(position=game.at(9,3)){}
 object pared19 inherits Pared(position=game.at(10,5)){}
 object pared20 inherits Pared(position=game.at(11,5)){}
+
+// POWER UPS
+
+class PowerUps {
+	
+	var property position = null
+	var property x = null
+	var property y = null
+
+	
+  	method aparece() {
+        x = (1..14).anyOne() 
+		y = (1..13).anyOne()
+		position = game.at(x,y)
+		game.addVisual(self)
+		game.schedule(30000,{self.aparece()})
+		game.schedule(5500,{self.desaparece()})
+	}
+	
+	method desaparece() {
+		if (game.hasVisual(self)) {
+			game.removeVisual(self)
+		}
+	}
+	
+	method chocar(){}
+}
+
+
+class PowerUpVida inherits PowerUps {
+	
+	method image()="assets/imagenes/estrella.png"
+	
+	method efecto(tanque) {
+        tanque.vidaMaxima()
+        self.desaparece()
+    }
+}
+
+
+class PowerUpMuerte inherits PowerUps {
+	
+	method image()="assets/imagenes/granada.png"
+	
+    method efecto(tanque) {
+        tanque.explotarGranada()
+        self.desaparece()
+    }
+}
+
+
+const powerUpVida = new PowerUpVida ()
+const powerUpMuerte = new PowerUpMuerte ()
+
+
+
+
+
