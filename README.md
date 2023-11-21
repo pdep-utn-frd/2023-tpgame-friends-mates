@@ -10,13 +10,13 @@ Jugabilidad:
 
 
 Jugador 1                                                              
-Movimiento: [![wasd.jpg](https://i.postimg.cc/Nff1WzPk/wasd.jpg)](https://postimg.cc/yWtgRvKD)                                                                                             
-Disparo: [![enter.png](https://i.postimg.cc/vZZ3tBsM/enter.png)](https://postimg.cc/SJH6ymRt)
+Movimiento: W A S D                                                                                            
+Disparo: ENTER
 
 
 Jugador 2
-Movimiento: [![flechas.jpg](https://i.postimg.cc/tJRxGsD4/flechas.jpg)](https://postimg.cc/YGV91qJ5)
-Disparo: [![teclaF.jpg](https://i.postimg.cc/R0ff75N4/teclaF.jpg)](https://postimg.cc/B8SX3zTV)       
+Movimiento: FLECHAS DE DIRECCIÓN
+Disparo: F       
 
 
 Power-Ups:
