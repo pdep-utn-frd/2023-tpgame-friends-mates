@@ -1,25 +1,29 @@
-Tank War
+# Tank War
 
-[![menu-Juego.png](https://i.postimg.cc/ry9s2yvv/menu-Juego.png)](https://postimg.cc/qgz48rBL)
+[![menu-Juego.jpg](https://i.postimg.cc/3NHHkGz3/menu-Juego.jpg)](https://postimg.cc/0MZ43z84)
 
-!Bienvenido a Tank War! 
+## !Bienvenido a Tank War! 
 
 Enfréntate a tu amigo (o enemigo) en una batalla de ingenio y destreza. Así que ponte el casco, sube al tanque y prepárate para una batalla de risas y explosiones. ¡Que gane el mejor tanque!
 
-Jugabilidad:
+# Jugabilidad:
 
 
-Jugador 1                                                              
-Movimiento: W A S D                                                                                            
+### Jugador 1      
+
+Movimiento: W A S D   
+
 Disparo: ENTER
 
 
-Jugador 2
+### Jugador 2
+
 Movimiento: FLECHAS DE DIRECCIÓN
+
 Disparo: F       
 
 
-Power-Ups:
+# Power-Ups:
 
 [![estrella.png](https://i.postimg.cc/yYqPtjCf/estrella.png)](https://postimg.cc/fkKm0xLX) : es un power up que te da una segunda oportunidad en la batalla. Cuando tu tanque está al borde del colapso, este power up restaura tu salud al máximo, permitiéndote continuar la lucha con renovado vigor. ¡Es como un soplo de vida fresca para tu tanque! Pero úsalo sabiamente, estos power ups son raros. ¡Vuelve a la acción y muestra a tu oponente de lo que estás hecho!”
 
